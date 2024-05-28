@@ -9,6 +9,6 @@
         public ApplicationUser User { get; set; }
         public int RoleId { get; set; }
         public ProjectRole Role { get; set; }
-        public ICollection<Task> AssignedTasks { get; set; }
+        public ICollection<TaskAssignment> TaskAssignments { get; set; } = new List<TaskAssignment>();
     }
 }

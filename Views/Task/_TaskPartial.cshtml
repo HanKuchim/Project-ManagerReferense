@@ -1,0 +1,27 @@
+﻿@model Project_Manager.Models.Task
+
+@{
+    var userRole = ViewBag.UserRole as string;
+}
+
+<div class="task" style="margin-left: @(Model.ParentTaskId.HasValue ? "20px" : "0px")">
+    <h3>@Model.Title</h3>
+    <p>@Model.Description</p>
+    <p>Due: @Model.DueDate.ToString("MM/dd/yyyy")</p>
+    <p>Priority: @Model.Priority</p>
+    <p>Status: @Model.Status</p>
+    <a asp-action="Details" asp-controller="Task" asp-route-id="@Model.Id" class="btn btn-info">Details</a>
+
+    @if (userRole == "Admin" || userRole == "Moderator")
+    {
+        <a asp-action="Create" asp-controller="Task" asp-route-projectId="@Model.ProjectId" asp-route-parentTaskId="@Model.Id" class="btn btn-secondary">Add Subtask</a>
+    }
+
+    @if (Model.SubTasks != null && Model.SubTasks.Any())
+    {
+        @foreach (var subTask in Model.SubTasks)
+        {
+            @await Html.PartialAsync("~/Views/Task/_TaskPartial.cshtml", subTask)
+        }
+    }
+</div>

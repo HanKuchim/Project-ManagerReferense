@@ -1,0 +1,38 @@
+﻿@model Project_Manager.Models.Project
+
+@{
+    ViewData["Title"] = "Project Tasks";
+    var userRole = ViewBag.UserRole as string;
+}
+
+<h1>@Model.Title - Tasks</h1>
+
+<a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-primary">Back to Project Details</a>
+@if (userRole == "Admin" || userRole == "Moderator")
+{
+    <a asp-action="Create" asp-controller="Tasks" asp-route-projectId="@Model.Id" class="btn btn-primary">Add Task</a>
+}
+
+<div class="form-group">
+    <input type="text" id="taskSearch" class="form-control" placeholder="Search for tasks..." />
+</div>
+
+<div id="taskList">
+    @foreach (var task in Model.Tasks.Where(t => t.ParentTaskId == null))
+    {
+        @await Html.PartialAsync("~/Views/Task/_TaskPartial.cshtml", task)
+    }
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById("taskSearch").addEventListener("input", function () {
+            var search = this.value.toLowerCase();
+            var tasks = document.querySelectorAll(".task");
+            tasks.forEach(task => {
+                var title = task.querySelector("h3").textContent.toLowerCase();
+                task.style.display = title.includes(search) ? "" : "none";
+            });
+        });
+    </script>
+}

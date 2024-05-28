@@ -10,11 +10,10 @@
         public string Status { get; set; }
         public int ProjectId { get; set; }
         public Project Project { get; set; }
-        public int? AssignedMemberId { get; set; }
-        public ProjectMember AssignedMember { get; set; }
         public int? ParentTaskId { get; set; }
         public Task ParentTask { get; set; }
-        public ICollection<Task> SubTasks { get; set; }
-        public ICollection<Comment> Comments { get; set; }
+        public ICollection<Task> SubTasks { get; set; } = new List<Task>();
+        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+        public ICollection<TaskAssignment> TaskAssignments { get; set; } = new List<TaskAssignment>();
     }
 }

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Project_Manager.Data;
+using Project_Manager.Models;
 
 namespace Project_Manager
 {
@@ -17,10 +18,13 @@ namespace Project_Manager
 
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            builder.Services.AddDefaultIdentity<ApplicationUser>(options => 
+            {
+                options.SignIn.RequireConfirmedAccount = false;
+            })
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
             var app = builder.Build();
 
@@ -41,6 +45,7 @@ namespace Project_Manager
 
             app.UseRouting();
 
+            app.UseAuthentication(); // Ensure the authentication middleware is added
             app.UseAuthorization();
 
             app.MapControllerRoute(

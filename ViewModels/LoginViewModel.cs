@@ -6,8 +6,8 @@ namespace Project_Manager.ViewModels
     public class LoginViewModel
     {
         [Required]
-        [EmailAddress]
-        public string Email { get; set; }
+        [Display(Name = "Username")]
+        public string UserName { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
@@ -15,8 +15,5 @@ namespace Project_Manager.ViewModels
         [Required]
         [Display(Name ="Remember me?")]
         public bool RememberMe { get; set; }
-
-        public IList<AuthenticationScheme> ExternalLogins { get; set; }
-        public string ReturnUrl { get; set; }
     }
 }
