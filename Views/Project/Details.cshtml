@@ -13,7 +13,7 @@
 
 <div class="btn-group" role="group" aria-label="Project Actions">
     <a asp-action="Index" class="btn btn-primary">Back to List</a>
-    <a asp-action="Tasks" asp-route-projectId="@Model.Id" class="btn btn-secondary">Project Tasks</a>
+    <a asp-action="Index" asp-controller="Task" asp-route-projectId="@Model.Id" class="btn btn-secondary">Project Tasks</a>
     <a class="btn btn-secondary">Project Members</a>
     <a class="btn btn-secondary">Project Management</a>
 </div>

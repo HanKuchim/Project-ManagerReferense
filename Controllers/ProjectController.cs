@@ -99,23 +99,6 @@ namespace Project_Manager.Controllers
             return View(project);
 
         }
-        //Вынеси это в контроллер задач
-
-        public async Task<IActionResult> Tasks(int projectId)
-        {
-            var project = await _context.Projects
-                .Include(p => p.Tasks)
-                .FirstOrDefaultAsync(p => p.Id == projectId);
-
-            if (project == null)
-            {
-                return NotFound();
-            }
-
-            var userRole = await GetUserRoleInProject(projectId);
-            ViewBag.UserRole = userRole?.Name;
-
-            return View(project);
-        }
+        
     }
 }

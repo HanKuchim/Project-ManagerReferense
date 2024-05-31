@@ -14,10 +14,12 @@ namespace Project_Manager.Controllers
     public class TaskController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public TaskController(ApplicationDbContext context)
+        public TaskController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Tasks/Create
@@ -54,8 +56,11 @@ namespace Project_Manager.Controllers
                 _context.Tasks.Add(task);
                 await _context.SaveChangesAsync();
 
-                return RedirectToAction("Details", "Project", new { id = model.ProjectId });
+                return Redirect($"Index?ProjectId={model.ProjectId}");
+                //return RedirectToAction("Index",model.ProjectId);
+
             }
+            return BadRequest("404");
             return View(model);
         }
 
@@ -74,6 +79,32 @@ namespace Project_Manager.Controllers
             }
 
             return View(task);
+        }
+        private async Task<ProjectRole> GetUserRoleInProject(int projectId)
+        {
+            var userId = _userManager.GetUserId(User);
+            var projectMember = await _context.ProjectMembers
+                .Include(pm => pm.Role)
+                .FirstOrDefaultAsync(pm => pm.ProjectId == projectId && pm.UserId == userId);
+
+            return projectMember?.Role;
+        }
+
+        public async Task<IActionResult> Index(int ProjectId)
+        {
+            var project = await _context.Projects
+                .Include(p => p.Tasks)
+                .FirstOrDefaultAsync(p => p.Id == ProjectId);
+
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            var userRole = await GetUserRoleInProject(ProjectId);
+            ViewBag.UserRole = userRole?.Name;
+
+            return View(project);
         }
     }
 }
