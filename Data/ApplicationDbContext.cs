@@ -17,68 +17,65 @@ namespace Project_Manager.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // Define composite keys for TaskAssignment
             modelBuilder.Entity<TaskAssignment>()
                 .HasKey(ta => new { ta.TaskId, ta.ProjectMemberId });
 
-            // Configure relationships for TaskAssignment
+            
             modelBuilder.Entity<TaskAssignment>()
                 .HasOne(ta => ta.Task)
                 .WithMany(t => t.TaskAssignments)
                 .HasForeignKey(ta => ta.TaskId)
-                .OnDelete(DeleteBehavior.Restrict); // Restrict or NoAction to prevent multiple cascade paths
+                .OnDelete(DeleteBehavior.Cascade); 
 
             modelBuilder.Entity<TaskAssignment>()
                 .HasOne(ta => ta.ProjectMember)
                 .WithMany(pm => pm.TaskAssignments)
                 .HasForeignKey(ta => ta.ProjectMemberId)
-                .OnDelete(DeleteBehavior.Restrict); // Restrict or NoAction to prevent multiple cascade paths
+                .OnDelete(DeleteBehavior.Cascade); 
 
-            // Configure relationships for Task
             modelBuilder.Entity<Task>()
                 .HasOne(t => t.Project)
                 .WithMany(p => p.Tasks)
                 .HasForeignKey(t => t.ProjectId)
-                .OnDelete(DeleteBehavior.Cascade); // If you want to cascade delete tasks when a project is deleted
+                .OnDelete(DeleteBehavior.Cascade); 
 
             modelBuilder.Entity<Task>()
                 .HasOne(t => t.ParentTask)
                 .WithMany(t => t.SubTasks)
                 .HasForeignKey(t => t.ParentTaskId)
-                .OnDelete(DeleteBehavior.Restrict); // Restrict or NoAction to prevent multiple cascade paths
+                .OnDelete(DeleteBehavior.Restrict); 
 
-            // Configure relationships for Project
+            
             modelBuilder.Entity<Project>()
                 .HasOne(p => p.Owner)
                 .WithMany()
                 .HasForeignKey(p => p.OwnerId)
-                .OnDelete(DeleteBehavior.Restrict); // Restrict or NoAction to prevent multiple cascade paths
+                .OnDelete(DeleteBehavior.Restrict); 
 
-            // Configure relationships for ProjectMember
             modelBuilder.Entity<ProjectMember>()
                 .HasOne(pm => pm.Project)
                 .WithMany(p => p.ProjectMembers)
                 .HasForeignKey(pm => pm.ProjectId)
-                .OnDelete(DeleteBehavior.Cascade); // If you want to cascade delete project members when a project is deleted
+                .OnDelete(DeleteBehavior.Cascade); 
 
             modelBuilder.Entity<ProjectMember>()
                 .HasOne(pm => pm.User)
                 .WithMany()
                 .HasForeignKey(pm => pm.UserId)
-                .OnDelete(DeleteBehavior.Restrict); // Restrict or NoAction to prevent multiple cascade paths
+                .OnDelete(DeleteBehavior.Cascade); 
 
-            // Configure relationships for ProjectRole
             modelBuilder.Entity<ProjectRole>()
                 .HasMany(pr => pr.ProjectMembers)
                 .WithOne(pm => pm.Role)
                 .HasForeignKey(pm => pm.RoleId)
-                .OnDelete(DeleteBehavior.Restrict); // Restrict or NoAction to prevent multiple cascade paths
+                .OnDelete(DeleteBehavior.Restrict); 
 
             modelBuilder.Entity<ProjectInvitation>()
                .HasOne(pi => pi.Project)

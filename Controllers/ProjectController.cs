@@ -152,6 +152,7 @@ namespace Project_Manager.Controllers
         {
             var project = await _context.Projects
                 .Include(p => p.Tasks)
+                .ThenInclude(t => t.TaskAssignments)
                 .Include(p => p.ProjectMembers)
                 .FirstOrDefaultAsync(m => m.Id == id);
 

@@ -8,7 +8,7 @@
 
 <p>Are you sure you want to delete the project <strong>@Model.Title</strong>?</p>
 
-<form asp-action="DeleteConfirmed" method="post">
+<form asp-action="Delete" method="post">
     <input type="hidden" name="id" value="@Model.Id" />
     <button type="submit" class="btn btn-danger">Yes, delete this project</button>
     <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">No, go back</a>
