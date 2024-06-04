@@ -1,0 +1,19 @@
+﻿@model Project_Manager.Models.Project
+
+@{
+    ViewData["Title"] = "Project Management";
+}
+
+<h1>Project Management: @Model.Title</h1>
+
+<p><strong>Description:</strong> @Model.Description</p>
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit Project Description</a>
+</div>
+
+<div>
+    <a asp-action="ConfirmDelete" asp-route-id="@Model.Id" class="btn btn-danger">Delete Project</a>
+</div>
+
+<a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-primary">Back to Project Details</a>

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Project_Manager.Data;
 using Project_Manager.Models;
@@ -15,11 +16,13 @@ namespace Project_Manager.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ILogger<AccountController> _logger;
 
-        public TaskController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public TaskController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, ILogger<AccountController> logger)
         {
             _context = context;
             _userManager = userManager;
+            _logger = logger;
         }
 
         // GET: Tasks/Create
@@ -70,7 +73,12 @@ namespace Project_Manager.Controllers
             var task = await _context.Tasks
                 .Include(t => t.Project)
                 .Include(t => t.TaskAssignments)
-                .Include(t => t.SubTasks)
+                .ThenInclude(ta => ta.ProjectMember)
+                //добавь инклюд ролей
+                .ThenInclude(pm => pm.User)
+                .Include(t => t.TaskAssignments)
+                .ThenInclude(ta => ta.ProjectMember)
+                .ThenInclude(ta => ta.Role)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (task == null)
@@ -78,17 +86,13 @@ namespace Project_Manager.Controllers
                 return NotFound();
             }
 
+            var userRole = await GetUserRoleInProject(task.ProjectId);
+            ViewBag.UserRole = userRole?.Name;
+
             return View(task);
         }
-        private async Task<ProjectRole> GetUserRoleInProject(int projectId)
-        {
-            var userId = _userManager.GetUserId(User);
-            var projectMember = await _context.ProjectMembers
-                .Include(pm => pm.Role)
-                .FirstOrDefaultAsync(pm => pm.ProjectId == projectId && pm.UserId == userId);
 
-            return projectMember?.Role;
-        }
+        
 
         public async Task<IActionResult> Index(int ProjectId)
         {
@@ -105,6 +109,60 @@ namespace Project_Manager.Controllers
             ViewBag.UserRole = userRole?.Name;
 
             return View(project);
+        }
+
+        // GET: Tasks/Delete/5
+        //[Authorize(Roles = "Admin, Moderator")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var task = await _context.Tasks
+                .Include(t => t.Project)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (task == null)
+            {
+                return NotFound();
+            }
+
+            var userRole = await GetUserRoleInProject(task.ProjectId);
+            if (userRole?.Name != "Admin" && userRole?.Name != "Moderator")
+            {
+                return Forbid();
+            }
+
+            return View(task);
+        }
+
+        // POST: Tasks/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        //[Authorize(Roles = "Admin, Moderator")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var task = await _context.Tasks
+                .Include(t => t.SubTasks)
+                .Include(t => t.Comments)
+                .Include(t => t.TaskAssignments)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (task == null)
+            {
+                return NotFound();
+            }
+
+            _context.Tasks.Remove(task);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index), new { ProjectId = task.ProjectId });
+        }
+
+        private async Task<ProjectRole> GetUserRoleInProject(int projectId)
+        {
+            var userId = _userManager.GetUserId(User);
+            var projectMember = await _context.ProjectMembers
+                .Include(pm => pm.Role)
+                .FirstOrDefaultAsync(pm => pm.ProjectId == projectId && pm.UserId == userId);
+
+            return projectMember?.Role;
         }
     }
 }

@@ -6,8 +6,14 @@
     <h1 class="display-4">Welcome</h1>
 
 </div>
-<div>
-    <form asp-action="Index" asp-controller="Project">
-        <button type="submit">Проекты</button>
-    </form>
-</div>
+
+@if (User.Identity.IsAuthenticated)
+{
+    <a asp-controller="Project" asp-action="Index" class="btn btn-primary">Projects</a>
+    <a asp-controller="UserInvitations" asp-action="Index" class="btn btn-primary">My Invitations</a>
+    
+}
+else
+{
+    
+}

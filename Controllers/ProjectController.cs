@@ -23,8 +23,24 @@ namespace Project_Manager.Controllers
         public async Task<IActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(User);
-            var projects = _context.Projects.Where(p => p.OwnerId == user.Id).ToList();
-            return View(projects);
+            var ownedProjects = await _context.Projects
+                .Where(p => p.OwnerId == user.Id)
+                .ToListAsync();
+
+            var invitedProjects = await _context.ProjectMembers
+                .Include(pm => pm.Project)
+                .ThenInclude(p => p.Owner)
+                .Include(pm => pm.Role)
+                .Where(pm => pm.UserId == user.Id && pm.Project.OwnerId != user.Id)
+                .ToListAsync();
+
+            var viewModel = new UserProjectsViewModel
+            {
+                OwnedProjects = ownedProjects,
+                InvitedProjects = invitedProjects
+            };
+
+            return View(viewModel);
         }
 
         public IActionResult Create()
@@ -68,15 +84,7 @@ namespace Project_Manager.Controllers
             }
             return View(model);
         }
-        private async Task<ProjectRole> GetUserRoleInProject(int projectId)
-        {
-            var userId = _userManager.GetUserId(User);
-            var projectMember = await _context.ProjectMembers
-                .Include(pm => pm.Role)
-                .FirstOrDefaultAsync(pm => pm.ProjectId == projectId && pm.UserId == userId);
-
-            return projectMember?.Role;
-        }
+        
         public async Task<IActionResult> Details(int id)
         {
             var project = await _context.Projects
@@ -99,6 +107,72 @@ namespace Project_Manager.Controllers
             return View(project);
 
         }
-        
+
+        // GET: Projects/Manage/5
+        //[Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Manage(int id)
+        {
+            var project = await _context.Projects
+                .Include(p => p.Owner)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            var userRole = await GetUserRoleInProject(project.Id);
+            if (userRole?.Name != "Admin")
+            {
+                return Forbid();
+            }
+
+            return View(project);
+        }
+
+        public async Task<IActionResult> ConfirmDelete(int id)
+        {
+            var project = await _context.Projects
+                .Include(p => p.Owner)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            return View(project);
+        }
+
+        // POST: Projects/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        //[Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var project = await _context.Projects
+                .Include(p => p.Tasks)
+                .Include(p => p.ProjectMembers)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            _context.Projects.Remove(project);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        private async Task<ProjectRole> GetUserRoleInProject(int projectId)
+        {
+            var userId = _userManager.GetUserId(User);
+            var projectMember = await _context.ProjectMembers
+                .Include(pm => pm.Role)
+                .FirstOrDefaultAsync(pm => pm.ProjectId == projectId && pm.UserId == userId);
+
+            return projectMember?.Role;
+        }
     }
 }

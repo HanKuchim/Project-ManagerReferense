@@ -1,0 +1,55 @@
+﻿@model Project_Manager.Models.Task
+
+@{
+    ViewData["Title"] = "Task Details";
+    var userRole = ViewBag.UserRole as string;
+}
+
+<h1>@Model.Title</h1>
+
+<p>@Model.Description</p>
+<p>Due Date: @Model.DueDate.ToString("MM/dd/yyyy")</p>
+<p>Priority: @Model.Priority</p>
+<p>Status: @Model.Status</p>
+
+<h2>Assigned Members</h2>
+@if (ViewBag.UserRole == "Admin" || ViewBag.UserRole == "Moderator")
+{
+    <a asp-action="Assign" asp-controller="TaskAssignment" asp-route-taskId="@Model.Id" class="btn btn-primary">Assign Member</a>
+    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete Task</a>
+
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Role</th>
+            @if (ViewBag.UserRole == "Admin" || ViewBag.UserRole == "Moderator")
+            {
+                <th>Action</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var assignment in Model.TaskAssignments)
+        {
+            <tr>
+                <td>@assignment.ProjectMember.User.UserName</td>
+                <td>@assignment.ProjectMember.Role.Name</td>
+                @if (ViewBag.UserRole == "Admin" || ViewBag.UserRole == "Moderator")
+                {
+                    <td>
+                        <form asp-action="RemoveAssignment" asp-controller="TaskAssignment" method="post">
+                            <input type="hidden" name="taskId" value="@Model.Id" />
+                            <input type="hidden" name="assignmentId" value="@assignment.Id" />
+                            <button type="submit" class="btn btn-danger">Remove</button>
+                        </form>
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-controller="Task" asp-action="Index" asp-route-projectId="@Model.Project.Id" class="btn btn-primary">Back to List</a>

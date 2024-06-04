@@ -14,6 +14,9 @@
 <div class="btn-group" role="group" aria-label="Project Actions">
     <a asp-action="Index" class="btn btn-primary">Back to List</a>
     <a asp-action="Index" asp-controller="Task" asp-route-projectId="@Model.Id" class="btn btn-secondary">Project Tasks</a>
-    <a class="btn btn-secondary">Project Members</a>
-    <a class="btn btn-secondary">Project Management</a>
+    <a asp-action="Index" asp-controller="ProjectMembers" asp-route-projectId="@Model.Id" class="btn btn-secondary">Project Members</a>
+    @if (userRole == "Admin")
+    {
+        <a asp-action="Manage" asp-controller="Project" asp-route-id="@Model.Id" class="btn btn-secondary">Project Management</a>
+    }
 </div>

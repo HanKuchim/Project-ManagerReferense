@@ -1,0 +1,27 @@
+﻿@model Project_Manager.ViewModels.ProjectInvitationCreateViewModel
+
+@{
+    ViewData["Title"] = "Create Invitation";
+}
+
+<h1>Create Invitation</h1>
+
+<form asp-action="Create">
+    <div class="form-group">
+        <label asp-for="RecipientIdentifier" class="control-label"></label>
+        <input asp-for="RecipientIdentifier" class="form-control" />
+        <span asp-validation-for="RecipientIdentifier" class="text-danger"></span>
+    </div>
+    <input type="hidden" asp-for="ProjectId" />
+    <button type="submit" class="btn btn-primary">Send Invitation</button>
+</form>
+
+<div>
+    <a asp-action="Index" asp-controller="ProjectMembers" asp-route-id="@Model.ProjectId">Back to Project Members</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

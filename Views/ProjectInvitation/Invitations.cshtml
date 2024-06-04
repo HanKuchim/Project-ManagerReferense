@@ -1,0 +1,32 @@
+﻿@model Project_Manager.ViewModels.ProjectInvitationListViewModel
+
+@{
+    ViewData["Title"] = "Project Invitations";
+}
+
+<h1>Project Invitations</h1>
+
+<a asp-action="Details" asp-controller="Project" asp-route-id="@Model.ProjectId" class="btn btn-secondary">Back to Project Details</a>
+<a asp-action="Create" asp-route-projectId="@Model.ProjectId" class="btn btn-primary">Invite Member</a>
+
+<table class="table mt-4">
+    <thead>
+        <tr>
+            <th>Recipient</th>
+            <th>Sender</th>
+            <th>Sent Date</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var invitation in Model.Invitations)
+        {
+            <tr>
+                <td>@invitation.Recipient.UserName</td>
+                <td>@invitation.Sender.UserName</td>
+                <td>@invitation.SentDate.ToString("MM/dd/yyyy")</td>
+                <td>@invitation.Status</td>
+            </tr>
+        }
+    </tbody>
+</table>

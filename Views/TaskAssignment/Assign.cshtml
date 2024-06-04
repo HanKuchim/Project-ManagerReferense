@@ -1,0 +1,16 @@
+﻿@model Project_Manager.ViewModels.TaskAssignViewModel
+
+@{
+    ViewData["Title"] = "Assign Member";
+}
+
+<h1>Assign Member to Task</h1>
+
+<form asp-action="Assign" method="post">
+    <div class="form-group">
+        <label for="SelectedMemberId">Member</label>
+        <select asp-for="SelectedMemberId" class="form-control" asp-items="Model.Members"></select>
+    </div>
+    <input type="hidden" asp-for="TaskId" />
+    <button type="submit" class="btn btn-primary">Assign</button>
+</form>

@@ -10,5 +10,7 @@
         public ApplicationUser Owner { get; set; }
         public ICollection<Task> Tasks { get; set; }
         public ICollection<ProjectMember> ProjectMembers { get; set; }
+        public ICollection<ProjectInvitation> ProjectInvitations { get; set; }
+
     }
 }

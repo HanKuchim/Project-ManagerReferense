@@ -1,0 +1,43 @@
+﻿@model IEnumerable<Project_Manager.Models.ProjectInvitation>
+
+@{
+    ViewData["Title"] = "My Invitations";
+}
+
+<h1>My Invitations</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Project</th>
+            <th>Sender</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var invitation in Model)
+        {
+            <tr>
+                <td>@invitation.Project.Title</td>
+                <td>@invitation.Sender.UserName</td>
+                <td>@invitation.SentDate.ToShortDateString()</td>
+                <td>@invitation.Status</td>
+                <td>
+                    @if (invitation.Status == InvitationStatus.Pending)
+                    {
+                        <form asp-action="Accept" method="post" style="display: inline;">
+                            <input type="hidden" name="id" value="@invitation.Id" />
+                            <button type="submit" class="btn btn-success">Accept</button>
+                        </form>
+                        <form asp-action="Decline" method="post" style="display: inline;">
+                            <input type="hidden" name="id" value="@invitation.Id" />
+                            <button type="submit" class="btn btn-danger">Decline</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

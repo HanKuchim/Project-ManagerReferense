@@ -7,7 +7,7 @@
 
 <h1>@Model.Title - Tasks</h1>
 
-<a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-primary">Back to Project Details</a>
+<a asp-controller="Project" asp-action="Details" asp-route-id="@Model.Id" class="btn btn-primary">Back to Project Details</a>
 @if (userRole == "Admin" || userRole == "Moderator")
 {
     <a asp-action="Create" asp-controller="Task" asp-route-projectId="@Model.Id" class="btn btn-primary">Add Task</a>

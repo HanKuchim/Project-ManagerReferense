@@ -13,7 +13,7 @@ namespace Project_Manager.Data
         public DbSet<Task> Tasks { get; set; }
         public DbSet<TaskAssignment> TaskAssignments { get; set; }
         public DbSet<Comment> Comments { get; set; }
-
+        public DbSet<ProjectInvitation> ProjectInvitations { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
@@ -79,6 +79,24 @@ namespace Project_Manager.Data
                 .WithOne(pm => pm.Role)
                 .HasForeignKey(pm => pm.RoleId)
                 .OnDelete(DeleteBehavior.Restrict); // Restrict or NoAction to prevent multiple cascade paths
+
+            modelBuilder.Entity<ProjectInvitation>()
+               .HasOne(pi => pi.Project)
+               .WithMany(p => p.ProjectInvitations)
+               .HasForeignKey(pi => pi.ProjectId);
+
+            modelBuilder.Entity<ProjectInvitation>()
+                .HasOne(pi => pi.Sender)
+                .WithMany(u => u.SentInvitations)
+                .HasForeignKey(pi => pi.SenderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+            modelBuilder.Entity<ProjectInvitation>()
+                .HasOne(pi => pi.Recipient)
+                .WithMany(u => u.ReceivedInvitations)
+                .HasForeignKey(pi => pi.RecipientId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

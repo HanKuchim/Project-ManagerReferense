@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Project_Manager.Models.Project>
+﻿@model Project_Manager.ViewModels.UserProjectsViewModel
 
 @{
     ViewData["Title"] = "My Projects";
@@ -8,6 +8,7 @@
 
 @if (User.Identity.IsAuthenticated)
 {
+    <h2>Owned Projects</h2>
     <table class="table">
         <thead>
             <tr>
@@ -19,7 +20,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var project in Model)
+            @foreach (var project in Model.OwnedProjects)
             {
                 <tr>
                     <td>@project.Title</td>
@@ -34,10 +35,37 @@
         </tbody>
     </table>
     <a asp-action="Create" class="btn btn-primary">Создать новый проект</a>
+
+    <h2>Projects you are a member of</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Created Date</th>
+                <th>Owner</th>
+                <th>Your Role</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var membership in Model.InvitedProjects)
+            {
+                <tr>
+                    <td>@membership.Project.Title</td>
+                    <td>@membership.Project.Description</td>
+                    <td>@membership.Project.CreatedDate.ToShortDateString()</td>
+                    <td>@membership.Project.Owner.UserName</td>
+                    <td>@membership.Role.Name</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@membership.Project.Id" class="btn btn-info">Подробнее</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 }
 else
 {
     <p>Please log in to see your projects.</p>
 }
-<h2>Projects you are a member of</h2>
-<p>Заглушка для списка проектов, в которые вас пригласили.</p>

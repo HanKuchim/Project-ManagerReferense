@@ -1,0 +1,79 @@
+﻿@model Project_Manager.Models.Project
+
+@{
+    ViewData["Title"] = "Project Members";
+    var userRole = ViewBag.UserRole as string;
+}
+
+<h1>@Model.Title - Members</h1>
+
+<a asp-action="Details" asp-controller="Project" asp-route-id="@Model.Id" class="btn btn-primary">Back to Project Details</a>
+@if (userRole == "Admin" || userRole == "Moderator")
+{
+    <a asp-action="Invitations" asp-controller="ProjectInvitation" asp-route-projectId="@Model.Id" class="btn btn-secondary">View Invitations</a>
+    <a asp-action="Create" asp-controller="ProjectInvitation" asp-route-projectId="@Model.Id" class="btn btn-primary">Invite Member</a>
+}
+
+<div class="form-group">
+    <input type="text" id="memberSearch" class="form-control" placeholder="Search for members..." />
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <a href="#" id="sortByName">Username</a>
+            </th>
+            <th>
+                <a href="#" id="sortByRole">Role</a>
+            </th>
+        </tr>
+    </thead>
+    <tbody id="memberList">
+        @foreach (var member in Model.ProjectMembers)
+        {
+            <tr>
+                <td>@member.User.UserName</td>
+                <td>@member.Role.Name</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        document.getElementById("memberSearch").addEventListener("input", function () {
+            var search = this.value.toLowerCase();
+            var members = document.querySelectorAll("#memberList tr");
+            members.forEach(member => {
+                var username = member.querySelector("td:first-child").textContent.toLowerCase();
+                member.style.display = username.includes(search) ? "" : "none";
+            });
+        });
+
+        document.getElementById("sortByName").addEventListener("click", function (e) {
+            e.preventDefault();
+            sortTable(0);
+        });
+
+        document.getElementById("sortByRole").addEventListener("click", function (e) {
+            e.preventDefault();
+            sortTable(1);
+        });
+
+        function sortTable(columnIndex) {
+            var table = document.getElementById("memberList");
+            var rows = Array.from(table.rows);
+            var sortedRows = rows.sort((a, b) => {
+                var aText = a.cells[columnIndex].textContent.toLowerCase();
+                var bText = b.cells[columnIndex].textContent.toLowerCase();
+                return aText.localeCompare(bText);
+            });
+            sortedRows.forEach(row => table.appendChild(row));
+        }
+
+        document.getElementById("inviteMemberButton").addEventListener("click", function () {
+            alert("Invite Member functionality to be implemented.");
+        });
+    </script>
+}
