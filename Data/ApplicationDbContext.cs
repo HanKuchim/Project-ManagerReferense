@@ -94,6 +94,11 @@ namespace Project_Manager.Data
                 .WithMany(u => u.ReceivedInvitations)
                 .HasForeignKey(pi => pi.RecipientId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ProjectRole>().HasData(
+                new ProjectRole { Id = 1, Name = "Admin" },
+                new ProjectRole { Id = 1, Name = "Moderator" },
+                new ProjectRole { Id = 1, Name = "User" });
         }
     }
 }

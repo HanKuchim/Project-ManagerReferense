@@ -74,7 +74,6 @@ namespace Project_Manager.Controllers
                 .Include(t => t.Project)
                 .Include(t => t.TaskAssignments)
                 .ThenInclude(ta => ta.ProjectMember)
-                //добавь инклюд ролей
                 .ThenInclude(pm => pm.User)
                 .Include(t => t.TaskAssignments)
                 .ThenInclude(ta => ta.ProjectMember)
@@ -92,7 +91,19 @@ namespace Project_Manager.Controllers
             return View(task);
         }
 
-        
+        public async Task<IActionResult> AssignedTasks()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var assignedTasks = await _context.TaskAssignments
+                .Include(ta => ta.Task)
+                .ThenInclude(t => t.Project)
+                .Where(ta => ta.ProjectMember.UserId == user.Id)
+                .Select(ta => ta.Task)
+                .ToListAsync();
+
+            return View(assignedTasks);
+        }
+
 
         public async Task<IActionResult> Index(int ProjectId)
         {
