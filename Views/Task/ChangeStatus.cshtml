@@ -1,0 +1,18 @@
+﻿@model Project_Manager.Models.Task
+
+@{
+    ViewData["Title"] = "Change Task Status";
+}
+
+<h1>Change Task Status</h1>
+
+<div>
+    <form asp-action="ChangeStatus" method="post">
+        <div class="form-group">
+            <label for="status">New Status:</label>
+            <input type="text" id="status" name="status" class="form-control" required>
+        </div>
+        <input type="hidden" name="taskId" value="@Model.Id" />
+        <button type="submit" class="btn btn-primary">Change Status</button>
+    </form>
+</div>

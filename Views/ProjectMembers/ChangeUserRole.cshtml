@@ -1,0 +1,27 @@
+﻿@model Project_Manager.ViewModels.ChangeUserRoleViewModel
+
+@{
+    ViewData["Title"] = "Change User Role";
+}
+
+<h1>Change User Role</h1>
+
+<div>
+    <p><strong>Username:</strong> @Model.ProjectMember.User.UserName</p>
+    <p><strong>Current Role:</strong> @Model.ProjectMember.Role.Name</p>
+</div>
+
+<form asp-action="ChangeUserRole" method="post">
+    <div class="form-group">
+        <label for="role">New Role:</label>
+        <select id="role" name="role" class="form-control" required>
+            @foreach (var role in Model.ProjectRoles)
+            {
+                <option value="@role.Id">@role.Name</option>
+            }
+        </select>
+    </div>
+    <input type="hidden" name="projectId" value="@Model.ProjectId" />
+    <input type="hidden" name="userId" value="@Model.ProjectMember.UserId" />
+    <button type="submit" class="btn btn-primary">Change Role</button>
+</form>

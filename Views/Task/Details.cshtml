@@ -19,6 +19,10 @@
     <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete Task</a>
 
 }
+@if (ViewBag.UserRole == "Admin" || ViewBag.UserRole == "Moderator" || Model.TaskAssignments.Any(a => a.ProjectMember.UserId == ViewBag.UserId))
+{
+    <a asp-action="ChangeStatus" asp-route-taskId="@Model.Id" class="btn btn-primary">Change Status</a>
+}
 
 <table class="table">
     <thead>

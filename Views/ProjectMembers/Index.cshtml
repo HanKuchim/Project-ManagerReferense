@@ -27,6 +27,10 @@
             <th>
                 <a href="#" id="sortByRole">Role</a>
             </th>
+            @if (userRole == "Admin")
+            {
+                <th>Change Role</th>
+            }
         </tr>
     </thead>
     <tbody id="memberList">
@@ -35,6 +39,12 @@
             <tr>
                 <td>@member.User.UserName</td>
                 <td>@member.Role.Name</td>
+                @if (userRole == "Admin")
+                {
+                    <td>
+                        <a asp-action="ChangeUserRole" asp-controller="ProjectMembers" asp-route-projectMemberId="@member.Id" class="btn btn-warning">Change Role</a>
+                    </td>
+                }
             </tr>
         }
     </tbody>

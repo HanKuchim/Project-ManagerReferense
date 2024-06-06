@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Project_Manager.Data;
 using Project_Manager.Models;
+using Project_Manager.ViewModels;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -49,6 +50,50 @@ namespace Project_Manager.Controllers
             ViewBag.UserRole = userRole?.Name;
 
             return View(project);
+        }
+
+        public async Task<IActionResult> ChangeUserRole(int projectMemberId)
+        {
+            
+            var projectMember = await _context.ProjectMembers
+                .Include(pm => pm.User)
+                .Include(pm => pm.Role)
+                .FirstOrDefaultAsync(pm => pm.Id == projectMemberId);
+
+            if (projectMember == null)
+            {
+                return NotFound();
+            }
+
+            var projectRoles = await _context.ProjectRoles.ToListAsync();
+
+            var viewModel = new ChangeUserRoleViewModel
+            {
+                ProjectId = projectMember.ProjectId,
+                ProjectMember = projectMember,
+                ProjectRoles = projectRoles
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangeUserRole(int projectId, string userId, int role)
+        {
+            var projectMember = await _context.ProjectMembers
+                .FirstOrDefaultAsync(pm => pm.ProjectId == projectId && pm.UserId == userId);
+
+            if (projectMember == null)
+            {
+                return NotFound();
+            }
+
+            projectMember.RoleId = role;
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index", new { projectId });
         }
     }
 }

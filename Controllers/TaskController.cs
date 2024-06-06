@@ -155,6 +155,38 @@ namespace Project_Manager.Controllers
             return RedirectToAction(nameof(Index), new { ProjectId = task.ProjectId });
         }
 
+        public IActionResult ChangeStatus(int taskId)
+        {
+            
+            var task = _context.Tasks.FirstOrDefault(t => t.Id == taskId);
+
+            if (task == null)
+            {
+                return NotFound();
+            }
+
+            
+            return View(task);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangeStatus(int taskId, string status)
+        {
+            var task = await _context.Tasks.FirstOrDefaultAsync(t => t.Id == taskId);
+
+            if (task == null)
+            {
+                return NotFound();
+            }
+
+            task.Status = status;
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Details", new { id = taskId });
+        }
+
         private async Task<ProjectRole> GetUserRoleInProject(int projectId)
         {
             var userId = _userManager.GetUserId(User);
