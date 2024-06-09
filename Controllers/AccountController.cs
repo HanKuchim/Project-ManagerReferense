@@ -62,17 +62,13 @@ namespace Project_Manager.Controllers
                     _logger.LogInformation("User created a new account with password.");
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    var callbackUrl = Url.Action(
-                        nameof(ConfirmEmail),
-                        "Account",
-                        new { userId = user.Id, code = code },
-                        protocol: HttpContext.Request.Scheme);
-
-                    await _emailSender.SendEmailAsync(model.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{callbackUrl}'>clicking here</a>.");
-
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    _logger.LogInformation("User signed in.");
+                    
+                    if (HttpContext != null) {
+                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        _logger.LogInformation("User signed in.");
+                    }
+                    if (HttpContext != null)
+                        return RedirectToAction("Index", "Home");
 
                     return RedirectToAction("Index", "Home");
                 }
