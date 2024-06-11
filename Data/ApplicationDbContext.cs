@@ -97,8 +97,8 @@ namespace Project_Manager.Data
 
             modelBuilder.Entity<ProjectRole>().HasData(
                 new ProjectRole { Id = 1, Name = "Admin" },
-                new ProjectRole { Id = 1, Name = "Moderator" },
-                new ProjectRole { Id = 1, Name = "User" });
+                new ProjectRole { Id = 2, Name = "Moderator" },
+                new ProjectRole { Id = 3, Name = "User" });
         }
     }
 }
