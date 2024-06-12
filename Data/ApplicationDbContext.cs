@@ -14,11 +14,19 @@ namespace Project_Manager.Data
         public DbSet<TaskAssignment> TaskAssignments { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<ProjectInvitation> ProjectInvitations { get; set; }
+        public ApplicationDbContext()
+        {
+
+        }
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
 
         }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+       => optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=aspnet-Project_Manager;Trusted_Connection=True;MultipleActiveResultSets=true");
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -27,55 +35,55 @@ namespace Project_Manager.Data
             modelBuilder.Entity<TaskAssignment>()
                 .HasKey(ta => new { ta.TaskId, ta.ProjectMemberId });
 
-            
+
             modelBuilder.Entity<TaskAssignment>()
                 .HasOne(ta => ta.Task)
                 .WithMany(t => t.TaskAssignments)
                 .HasForeignKey(ta => ta.TaskId)
-                .OnDelete(DeleteBehavior.Cascade); 
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<TaskAssignment>()
                 .HasOne(ta => ta.ProjectMember)
                 .WithMany(pm => pm.TaskAssignments)
                 .HasForeignKey(ta => ta.ProjectMemberId)
-                .OnDelete(DeleteBehavior.Cascade); 
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Task>()
                 .HasOne(t => t.Project)
                 .WithMany(p => p.Tasks)
                 .HasForeignKey(t => t.ProjectId)
-                .OnDelete(DeleteBehavior.Cascade); 
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Task>()
                 .HasOne(t => t.ParentTask)
                 .WithMany(t => t.SubTasks)
                 .HasForeignKey(t => t.ParentTaskId)
-                .OnDelete(DeleteBehavior.Restrict); 
+                .OnDelete(DeleteBehavior.Restrict);
 
-            
+
             modelBuilder.Entity<Project>()
                 .HasOne(p => p.Owner)
                 .WithMany()
                 .HasForeignKey(p => p.OwnerId)
-                .OnDelete(DeleteBehavior.Restrict); 
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<ProjectMember>()
                 .HasOne(pm => pm.Project)
                 .WithMany(p => p.ProjectMembers)
                 .HasForeignKey(pm => pm.ProjectId)
-                .OnDelete(DeleteBehavior.Cascade); 
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<ProjectMember>()
                 .HasOne(pm => pm.User)
                 .WithMany()
                 .HasForeignKey(pm => pm.UserId)
-                .OnDelete(DeleteBehavior.Cascade); 
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<ProjectRole>()
                 .HasMany(pr => pr.ProjectMembers)
                 .WithOne(pm => pm.Role)
                 .HasForeignKey(pm => pm.RoleId)
-                .OnDelete(DeleteBehavior.Restrict); 
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<ProjectInvitation>()
                .HasOne(pi => pi.Project)
@@ -99,6 +107,7 @@ namespace Project_Manager.Data
                 new ProjectRole { Id = 1, Name = "Admin" },
                 new ProjectRole { Id = 2, Name = "Moderator" },
                 new ProjectRole { Id = 3, Name = "User" });
+
+
         }
     }
-}
