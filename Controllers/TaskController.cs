@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Project_Manager.Data;
 using Project_Manager.Models;
 using Project_Manager.ViewModels;
+using System.Security.Claims;
 using Task = Project_Manager.Models.Task;
 
 
@@ -87,6 +88,8 @@ namespace Project_Manager.Controllers
 
             var userRole = await GetUserRoleInProject(task.ProjectId);
             ViewBag.UserRole = userRole?.Name;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            ViewBag.UserId = userId;
 
             return View(task);
         }
